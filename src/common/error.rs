@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 use axum::{http::StatusCode, response::IntoResponse};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 // use sqlx::error::DatabaseError;
 use thiserror::Error;
 use tracing::error;
@@ -25,7 +25,7 @@ use utoipa::ToSchema;
 //     UnprocessableEntity,
 // }
 
-#[derive(Serialize, Error, Debug, ToSchema)]
+#[derive(Serialize, Deserialize, Error, Debug, ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ApiError {
     status_code: u16,

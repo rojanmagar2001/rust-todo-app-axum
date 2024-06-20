@@ -1,15 +1,24 @@
 use clap::Parser;
-use rust_axum_todo_api::{config::Config, infrastructure::database};
+use rust_todo_app_axum::{config::Config, infrastructure::database};
 use tokio::net::TcpListener;
 use tracing::info;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use crate::routes;
 
 pub async fn create_server() {
-    // This returns an error if the .env file is not found
+    // This returns an error if the "env" file is not found
     dotenv::dotenv().ok();
 
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+                "rust_todo_app_axum=debug,tower_http=debug,axum::rejection=trace".into()
+            }),
+        )
+        .with(tracing_subscriber::fmt::layer())
+        .try_init()
+        .unwrap();
 
     let config = Config::parse();
 
@@ -24,7 +33,7 @@ pub async fn create_server() {
 
     info!("Database connection successfully made");
 
-    database::migrate(&pool).await; // only for development
+    database::migrate(&pool).await; // Only for development
 
     info!("Database migration successfully completed");
 

@@ -16,6 +16,7 @@ pub mod common {
     pub mod middleware;
     pub mod pagination;
     pub mod password_encoder;
+    pub mod extractor;
 }
 
 pub mod config;

@@ -1,17 +1,17 @@
-use axum::extract::State;
-use axum::Json;
+use axum::{Extension, Json};
 
 use crate::common::error::ApiError;
-use crate::common::middleware::ApiState;
+use crate::common::extractor::JsonOrForm;
+use crate::common::middleware::ApiContext;
 use crate::user::views::NewUserRequest;
 
 use crate::user::{service as user_service, views::UserView};
 
 pub async fn register_user(
-    State(api_state): State<ApiState>,
-    Json(request): Json<NewUserRequest>,
+    Extension(ctx): Extension<ApiContext>,
+    JsonOrForm(request): JsonOrForm<NewUserRequest>,
 ) -> Result<Json<UserView>, ApiError> {
-    let user = user_service::register_user(api_state.pool, request).await;
+    let user = user_service::register_user(ctx.pool, request).await;
 
     match user {
         Ok(user) => Ok(Json(UserView::from(user))),
